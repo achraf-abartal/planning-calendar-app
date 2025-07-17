@@ -36,3 +36,78 @@
     transform: rotate(360deg);
   }
 }
+/* Centre le bloc et limite la largeur */
+.calendar-wrapper {
+  max-width: 1200px;          /* largeur max du calendrier */
+  margin: 0 auto;             /* centre horizontalement */
+  padding: 0 24px 64px;       /* espace gauche/droite + bas */
+  box-sizing: border-box;
+}
+
+/* Titre (optionnel) */
+.calendar-title {
+  text-align: center;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+/* Coquille visuelle autour du calendrier */
+.calendar-shell {
+  background: #ffffff;
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+  padding: 16px;
+  overflow: hidden;           /* évite débordement */
+}
+
+/* Responsive : un peu plus d'espace sur grands écrans */
+@media (min-width: 768px) {
+  .calendar-wrapper {
+    padding: 0 48px 80px;
+  }
+  .calendar-shell {
+    padding: 24px;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 24px 32px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  font-family: sans-serif;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.modal-content button {
+  margin-top: 16px;
+  padding: 8px 16px;
+  background-color: #007BFF;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: #0056b3;
+}
