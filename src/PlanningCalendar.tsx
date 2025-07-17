@@ -39,32 +39,41 @@ const [isModalOpen, setIsModalOpen] = useState(false);
   <div className="calendar-wrapper">
     <h2 className="calendar-title">Planning des visites</h2>
     <div className="calendar-shell">
-      <FullCalendar
-              eventClick={(info) => {
-  setSelectedEvent(info.event);
-  setIsModalOpen(true);
-}}
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="timeGridWeek"
-        headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay',
-        }}
-        events={events}
-        height="auto"
-        eventContent={(arg) => {
-          const lines = arg.event.title.split('\n');
-          return (
-            <div style={{ whiteSpace: 'normal', fontSize: '0.85em', lineHeight: '1.3' }}>
-              <strong>{lines[0]}</strong><br />
-              <span>{lines[1]}</span><br />
-              <em>{lines[2]}</em>
-            </div>
-          );
-        }}
+<FullCalendar
+  eventClick={(info) => {
+    setSelectedEvent(info.event);
+    setIsModalOpen(true);
+  }}
+  plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+  initialView="timeGridWeek"
+  headerToolbar={{
+    left: 'prev,next today',
+    center: 'title',
+    right: 'dayGridMonth,timeGridWeek,timeGridDay',
+  }}
+  events={events}
+  height="auto"
+  slotMinTime="08:00:00"
+  slotMaxTime="23:30:00"
+  slotDuration="00:15:00" // 👈 créneaux de 15 minutes
+  slotLabelFormat={{
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false, // ⏱ pour format 24h (met à true pour format 12h)
+  }}
+  eventContent={(arg) => {
+    const lines = arg.event.title.split('\n');
+    return (
+      <div style={{ whiteSpace: 'normal', fontSize: '0.85em', lineHeight: '1.3' }}>
+        <strong>{lines[0]}</strong><br />
+        <span>{lines[1]}</span><br />
+        <em>{lines[2]}</em>
+      </div>
+    );
+  }}
+/>
 
-      />
+
     {isModalOpen && selectedEvent && (
   <div className="modal-overlay">
     <div className="modal-content">
