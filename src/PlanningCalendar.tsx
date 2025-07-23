@@ -4,11 +4,12 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { EventInput } from '@fullcalendar/core';
+import { EventApi } from '@fullcalendar/core'; // ✅ important pour typer les événements cliqués
 
 const PlanningCalendar: React.FC = () => {
-const [events, setEvents] = useState<EventInput[]>([]);
-const [selectedEvent, setSelectedEvent] = useState<EventInput | null>(null);
-const [isModalOpen, setIsModalOpen] = useState(false);
+  const [events, setEvents] = useState<EventInput[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<EventApi | null>(null); // ✅ corrigé ici
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetch('https://cors-anywhere.herokuapp.com/https://crmplanning.azurewebsites.net/api/GetPlanning')
@@ -36,69 +37,66 @@ const [isModalOpen, setIsModalOpen] = useState(false);
   }, []);
 
   return (
-  <div className="calendar-wrapper">
-    <h2 className="calendar-title">Planning des visites</h2>
-    <div className="calendar-shell">
-<FullCalendar
-  eventClick={(info) => {
-    setSelectedEvent(info.event);
-    setIsModalOpen(true);
-  }}
-  plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-  initialView="timeGridWeek"
-  headerToolbar={{
-    left: 'prev,next today',
-    center: 'title',
-    right: 'dayGridMonth,timeGridWeek,timeGridDay',
-  }}
-  events={events}
-  height="auto"
-  slotMinTime="08:00:00"
-  slotMaxTime="23:30:00"
-  slotDuration="00:15:00" // 👈 créneaux de 15 minutes
-  slotLabelFormat={{
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false, // ⏱ pour format 24h (met à true pour format 12h)
-  }}
-  eventContent={(arg) => {
-    const lines = arg.event.title.split('\n');
-    return (
-      <div style={{ whiteSpace: 'normal', fontSize: '0.85em', lineHeight: '1.3' }}>
-        <strong>{lines[0]}</strong><br />
-        <span>{lines[1]}</span><br />
-        <em>{lines[2]}</em>
+    <div className="calendar-wrapper">
+      <h2 className="calendar-title">Planning des visites</h2>
+      <div className="calendar-shell" style={{ padding: '0 40px 40px', maxWidth: '1200px', margin: '0 auto' }}>
+        <FullCalendar
+          eventClick={(info) => {
+            setSelectedEvent(info.event); // ✅ corrigé ici
+            setIsModalOpen(true);
+          }}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView="timeGridWeek"
+          headerToolbar={{
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay',
+          }}
+          events={events}
+          height="auto"
+          slotMinTime="08:00:00"
+          slotMaxTime="23:30:00"
+          slotDuration="00:15:00"
+          slotLabelFormat={{
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }}
+          eventContent={(arg) => {
+            const lines = arg.event.title?.split('\n') || [];
+            return (
+              <div style={{ whiteSpace: 'normal', fontSize: '0.85em', lineHeight: '1.3' }}>
+                <strong>{lines[0]}</strong><br />
+                <span>{lines[1]}</span><br />
+                <em>{lines[2]}</em>
+              </div>
+            );
+          }}
+        />
+
+        {isModalOpen && selectedEvent && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>Détails du rendez-vous</h3>
+              {selectedEvent.title ? (
+                <>
+                  <p><strong>Client :</strong> {selectedEvent.title.split('\n')[1]}</p>
+                  <p><strong>Nature :</strong> {selectedEvent.title.split('\n')[2]}</p>
+                  <p><strong>Heure :</strong> {selectedEvent.title.split('\n')[0]}</p>
+                </>
+              ) : (
+                <p>Aucun titre renseigné.</p>
+              )}
+              <p><strong>Début :</strong> {selectedEvent.start?.toLocaleString()}</p>
+              <p><strong>Fin :</strong> {selectedEvent.end?.toLocaleString()}</p>
+
+              <button onClick={() => setIsModalOpen(false)}>Fermer</button>
+            </div>
+          </div>
+        )}
       </div>
-    );
-  }}
-/>
-
-
-    {isModalOpen && selectedEvent && (
-  <div className="modal-overlay">
-    <div className="modal-content">
-      <h3>Détails du rendez-vous</h3>
-      {selectedEvent.title ? (
-        <>
-          <p><strong>Client :</strong> {selectedEvent.title.split('\n')[1]}</p>
-          <p><strong>Nature :</strong> {selectedEvent.title.split('\n')[2]}</p>
-          <p><strong>Heure :</strong> {selectedEvent.title.split('\n')[0]}</p>
-        </>
-      ) : (
-        <p>Aucun titre renseigné.</p>
-      )}
-      <p><strong>Début :</strong> {selectedEvent.start?.toLocaleString()}</p>
-      <p><strong>Fin :</strong> {selectedEvent.end?.toLocaleString()}</p>
-
-      <button onClick={() => setIsModalOpen(false)}>Fermer</button>
     </div>
-  </div>
-)}
-
-
-    </div>
-  </div>
-);
+  );
 };
 
 export default PlanningCalendar;
